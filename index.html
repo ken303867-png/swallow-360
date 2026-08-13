@@ -30,6 +30,7 @@ html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,
   let decompressed=await new Response(new Blob([buf]).stream().pipeThrough(ds)).text();
   if(!decompressed.includes('app-data')||!decompressed.includes('次の問題へ')) throw new Error('360問学習アプリ本体の検証に失敗しました。');
   decompressed=decompressed.replace("toast('新しいバージョンがあります。再読み込みすると更新されます');", "");
+  decompressed=decompressed.replace('</body>','<script src="./data-transfer.js?v=1"><\/script></body>');
   fill.style.width='100%';status.textContent='起動しています…';
   document.open();document.write(decompressed);document.close();
  }catch(e){console.error(e);status.textContent='アプリを読み込めませんでした';err.innerHTML='<div class="error">'+String(e.message||e)+'</div><p class="muted">再読み込みしても改善しない場合は、この画面をお知らせください。</p>'}
