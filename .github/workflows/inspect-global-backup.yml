@@ -1,0 +1,21 @@
+name: Inspect 360 backup scope
+on:
+  push:
+    branches: [feature/transfer-fix]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Inspect backup function scope
+        run: |
+          python3 - <<'PY'
+          import gzip,re
+          t=gzip.open('app.html.gz','rt',encoding='utf-8',errors='replace').read()
+          for pat in ['<script','async function exportBackup','async function importBackup','</script>']:
+            print(pat, t.find(pat))
+          i=t.find('async function exportBackup')
+          print(t[max(0,i-1500):i+2200])
+          PY
