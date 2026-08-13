@@ -1,0 +1,27 @@
+name: Inspect built in backup
+on:
+  push:
+    branches: [feature/transfer-fix]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Inspect backup functions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import gzip,re
+          text=gzip.open('app.html.gz','rt',encoding='utf-8',errors='replace').read()
+          for token in ['バックアップ','exportBackup','importBackup','読み込みました','backup']:
+            print('===',token,'===')
+            hits=0
+            for m in re.finditer(token,text,re.I):
+              a=max(0,m.start()-500);b=min(len(text),m.end()+900)
+              print(text[a:b].replace('\n',' '))
+              print()
+              hits+=1
+              if hits>=8: break
+          PY
